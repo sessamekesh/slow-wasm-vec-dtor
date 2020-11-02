@@ -12,63 +12,94 @@ Below are the results I saw on my machine. Notice the absurd destruction times o
 in both Chrome and Firefox when using `std::vector`, and how not-absurd they are when
 running natively or when using raw `new/delete` calls against a `uint8_t*`.
 
+`std::string` also has weird behavior - the fill is very expensive (data cast maybe?) but
+the alloc/free steps are very fast.
+
 NATIVE (x86 Release, MSVC):
 ```
 ---------- std::vector image benchmarks ----------
  size|         bytes|      alloc ms|       fill ms|       dtor ms
   256|         65536|             0|             0|             0
   512|        262144|             0|             1|             0
+ 1024|       1048576|             0|             8|             0
+ 2048|       4194304|             0|            22|             0
+ 4096|      16777216|             2|           169|             1
+
+
+---------- std::string image benchmarks ----------
+ size|         bytes|      alloc ms|       fill ms|       dtor ms
+  256|         65536|             0|             0|             0
+  512|        262144|             0|             1|             0
  1024|       1048576|             0|             4|             0
- 2048|       4194304|             0|            25|             0
- 4096|      16777216|             2|           164|             1
+ 2048|       4194304|             0|            24|             0
+ 4096|      16777216|             2|           171|             1
+
 
 ---------- raw image benchmarks ----------
  size|         bytes|      alloc ms|       fill ms|       dtor ms
   256|         65536|             0|             0|             0
   512|        262144|             0|             1|             0
- 1024|       1048576|             0|             5|             0
+ 1024|       1048576|             0|             4|             0
  2048|       4194304|             0|            22|             0
- 4096|      16777216|             0|           170|             1
+ 4096|      16777216|             0|           175|             1
 ```
 
 WASM (Firefox 82, Windows)
 ```
 ---------- std::vector image benchmarks ----------
  size|         bytes|      alloc ms|       fill ms|       dtor ms
-  256|         65536|             2|             2|             3
-  512|        262144|             8|             4|             3
- 1024|       1048576|            12|             9|            10
- 2048|       4194304|            51|            33|            44
- 4096|      16777216|           197|           173|           177
+  256|         65536|             3|             3|             3
+  512|        262144|            13|            12|            13
+ 1024|       1048576|            51|            47|            48
+ 2048|       4194304|           202|           187|           197
+ 4096|      16777216|           811|           837|           790
+
+
+---------- std::string image benchmarks ----------
+ size|         bytes|      alloc ms|       fill ms|       dtor ms
+  256|         65536|             0|             7|             0
+  512|        262144|             1|            28|             0
+ 1024|       1048576|             1|           115|             0
+ 2048|       4194304|             1|           459|             0
+ 4096|      16777216|             3|          1977|             0
 
 
 ---------- raw image benchmarks ----------
  size|         bytes|      alloc ms|       fill ms|       dtor ms
-  256|         65536|             0|             1|             0
-  512|        262144|             0|             3|             0
- 1024|       1048576|             0|             7|             0
- 2048|       4194304|             0|            33|             0
- 4096|      16777216|             0|           172|             0
+  256|         65536|             0|             3|             0
+  512|        262144|             0|             9|             0
+ 1024|       1048576|             0|            42|             0
+ 2048|       4194304|             0|           162|             0
+ 4096|      16777216|             0|           757|             0
 ```
 
 WASM (Chrome 86, Windows)
 ```
 ---------- std::vector image benchmarks ----------
  size|         bytes|      alloc ms|       fill ms|       dtor ms
-  256|         65536|             2|             1|             2
-  512|        262144|             9|             5|             8
- 1024|       1048576|            17|            10|            14
- 2048|       4194304|            67|            46|            60
- 4096|      16777216|           275|           191|           235
+  256|         65536|             1|             1|             1
+  512|        262144|             6|             6|             6
+ 1024|       1048576|            26|            25|            27
+ 2048|       4194304|           108|           102|           105
+ 4096|      16777216|           440|           418|           442
+
+
+---------- std::string image benchmarks ----------
+ size|         bytes|      alloc ms|       fill ms|       dtor ms
+  256|         65536|             0|             3|             0
+  512|        262144|             0|            15|             0
+ 1024|       1048576|             0|            63|             0
+ 2048|       4194304|             0|           262|             0
+ 4096|      16777216|             2|           938|             0
 
 
 ---------- raw image benchmarks ----------
  size|         bytes|      alloc ms|       fill ms|       dtor ms
-  256|         65536|             0|             0|             0
-  512|        262144|             0|             2|             0
- 1024|       1048576|             0|            10|             0
- 2048|       4194304|             0|            43|             0
- 4096|      16777216|             0|           183|             0
+  256|         65536|             0|             1|             0
+  512|        262144|             0|             5|             0
+ 1024|       1048576|             0|            20|             0
+ 2048|       4194304|             0|            82|             0
+ 4096|      16777216|             0|           331|             0
 ```
 ## Building / Running
 
