@@ -80,11 +80,11 @@ class StringBuffer {
     if (o_fillStart) {
       *o_fillStart = high_resolution_clock::now();
     }
+    uint8_t* p = reinterpret_cast<uint8_t*>(&data_[0]);
     for (int i = 0; i < width; i++) {
       for (int j = 0; j < height; j++) {
-        uint8_t pixel = uint8_t(
+        p[j * width + i] = uint8_t(
             getVal(float(i) / float(width), float(j) / float(height)) * 255u);
-        data_[j * width + i] = *reinterpret_cast<char*>(&pixel);
       }
     }
   }
@@ -144,12 +144,12 @@ int main() {
   std::cout << "\n\n";
 
   std::cout << "---------- std::string image benchmarks ----------"
-      << std::endl;
+            << std::endl;
   std::cout << std::setw(5) << "size"
-      << "|" << std::setw(14) << "bytes"
-      << "|" << std::setw(14) << "alloc ms"
-      << "|" << std::setw(14) << "fill ms"
-      << "|" << std::setw(14) << "dtor ms" << std::endl;
+            << "|" << std::setw(14) << "bytes"
+            << "|" << std::setw(14) << "alloc ms"
+            << "|" << std::setw(14) << "fill ms"
+            << "|" << std::setw(14) << "dtor ms" << std::endl;
   benchmark<StringBuffer>(256);
   benchmark<StringBuffer>(512);
   benchmark<StringBuffer>(1024);
